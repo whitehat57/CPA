@@ -23,8 +23,8 @@ for cmd in curl bash; do
   fi
 done
 
-# Download and run main installer
-TMP_SCRIPT="/tmp/cpa_installer.sh"
+# Use home directory instead of /tmp
+TMP_SCRIPT="$HOME/.cpa_installer.sh"
 echo "[+] Downloading installer from: $INSTALLER_URL"
 curl -fsSL "$INSTALLER_URL" -o "$TMP_SCRIPT"
 
