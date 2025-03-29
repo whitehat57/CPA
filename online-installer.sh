@@ -16,7 +16,7 @@ echo "[+] Initializing online installer..."
 INSTALLER_URL="https://raw.githubusercontent.com/whitehat57/CPA/main/installer.sh"
 
 # Check dependencies
-for cmd in curl bash; do
+for cmd in curl bash unzip; do
   if ! command -v $cmd &>/dev/null; then
     echo "[-] $cmd not found. Please install it first."
     exit 1
@@ -36,6 +36,19 @@ fi
 chmod +x "$TMP_SCRIPT"
 echo "[+] Running the installer..."
 bash "$TMP_SCRIPT"
+
+# Set hacker-style font for Termux
+echo "[+] Setting hacker-style font for Termux..."
+mkdir -p ~/.termux
+curl -fsSL https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/Hack.zip -o /tmp/Hack.zip
+unzip -o /tmp/Hack.zip -d /tmp/hack-font
+cp /tmp/hack-font/*Hack-Regular.ttf ~/.termux/font.ttf
+
+# Set font size
+echo "font_size=14" > ~/.termux/termux.properties
+termux-reload-settings
+
+echo "[+] Font successfully set to Hack Nerd Font with size 14."
 
 # Clean up
 rm "$TMP_SCRIPT"
