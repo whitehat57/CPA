@@ -1,73 +1,43 @@
 #!/bin/bash
 
-# CyberPeopleAttack Installer Script
-
-# Banner
+# CyberPeopleAttack Online Installer
 clear
-echo '  ___  ____   __  '
-echo ' / __)(  _ \ / _\ '
-echo '( (__  ) __//    \'
-echo ' \___)(__)  \_/\_/ v.2025'
-echo '    Online Installer'
-echo '=========================='
+echo "====================================="
+echo "   CyberPeopleAttack Installer v2025  "
+echo "====================================="
+echo "      _   _   _   _   _   _           "
+echo "     / \ / \ / \ / \ / \ / \         "
+echo "    ( C | P | A | I | N | S )          "
+echo "     \_/ \_/ \_/ \_/ \_/ \_/         "
+echo "====================================="
 
-# Set variables
-export GOPATH=$HOME/go
-export PATH=$PATH:$GOPATH/bin:$HOME/.local/bin:$HOME/.cargo/bin
+echo "[+] Initializing online installer..."
 
-# Update and install essential packages
-pkg update -y && pkg upgrade -y
-pkg install -y git curl wget python golang nodejs clang \
-    tsu proot termux-api nano unzip zip \
-    libffi openssl rust binutils
+INSTALLER_URL="https://raw.githubusercontent.com/whitehat57/CPA/main/installer.sh"
 
-# Setup pip & pipx
-python -m ensurepip --upgrade
-python -m pip install --upgrade pip
-python -m pip install pipx
-pipx ensurepath
-
-# Install Python libraries
-pipx install --pip-args="--no-cache-dir" aiohttp==3.11.14
-pipx inject aiohttp colorama==0.4.6 fake_useragent==2.1.0 Requests==2.32.3 urllib3==2.3.0
-
-# Install Node.js libraries
-yarn global add net http2 tls cluster url crypto user-agents fs header-generator fake-useragent https-proxy-agent || \
-npm install -g net http2 tls cluster url crypto user-agents fs header-generator fake-useragent https-proxy-agent
-
-# Clone tools
-TOOL_DIR=$HOME/CPA_TOOLS
-mkdir -p "$TOOL_DIR"
-cd "$TOOL_DIR"
-
-REPOS=(
-  "https://github.com/whitehat57/LOIC.git"
-  "https://gitlab.com/whitehat57/cpa.git"
-  "https://gitlab.com/whitehat57/karma-go.git"
-  "https://gitlab.com/whitehat57/techstack.git"
-)
-
-for repo in "${REPOS[@]}"; do
-  git clone "$repo"
+# Check dependencies
+for cmd in curl bash; do
+  if ! command -v $cmd &>/dev/null; then
+    echo "[-] $cmd not found. Please install it first."
+    exit 1
+  fi
 done
 
-# Setup Termux startup banner
-BANNER_FILE="$PREFIX/etc/motd"
-cat > "$BANNER_FILE" <<EOF
-               ▒▒████████      ▒▒█████████      ▒▒████████
-              ▒▒██     ▒▒█      ▒▒██   ▒▒██      ▒▒██  ▒▒██
-             ▒▒██               ▒▒██   ▒▒██      ▒▒██  ▒▒██
-             ▒▒██               ▒▒██▒█████       ▒▒████████
-              ▒▒██     ▒▒█      ▒▒██             ▒▒██  ▒▒██
-               ▒▒████████      ▒▒███            ▒▒███  ▒▒██  
+# Download and run main installer
+TMP_SCRIPT="/tmp/cpa_installer.sh"
+echo "[+] Downloading installer from: $INSTALLER_URL"
+curl -fsSL "$INSTALLER_URL" -o "$TMP_SCRIPT"
 
-           ---------------⚔️⚔️ CYBER PEOPLE ATTACK ⚔️⚔️---------------
-EOF
+if [ $? -ne 0 ]; then
+  echo "[-] Failed to download the installer."
+  exit 1
+fi
 
-# Set custom shell prompt
-SHELL_RC="$HOME/.bashrc"
-echo "\nexport PS1=\"\\[\\e[1;32m\\]CPA@free_Palestine > \\[$(tput sgr0)\\]\"" >> "$SHELL_RC"
+chmod +x "$TMP_SCRIPT"
+echo "[+] Running the installer..."
+bash "$TMP_SCRIPT"
 
-# Finish
-echo -e "\n[+] Installation complete!\n[!] Restart Termux or run 'source ~/.bashrc' to apply the changes."
-exit 0
+# Clean up
+rm "$TMP_SCRIPT"
+echo "[+] Installer complete."
+echo "[!] Please restart Termux or run 'source ~/.bashrc'"
