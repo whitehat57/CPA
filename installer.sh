@@ -78,6 +78,7 @@ for dir in "${!repos[@]}"; do
 
 done
 
+cd LOIC && chmod +x LOIC && cd
 # Build CPA
 cd ~/cpa 2>/dev/null && go mod download && go get github.com/fatih/color@v1.15.0 && go build main.go
 
