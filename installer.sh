@@ -88,6 +88,17 @@ git clone https://github.com/zsh-users/zsh-completions $ZSH_CUSTOM/plugins/zsh-c
 echo "[+] Setting custom Zsh prompt..."
 sed -i 's/^plugins=(git)/plugins=(git zsh-autosuggestions zsh-syntax-highlighting zsh-completions)/' ~/.zshrc
 echo 'export PROMPT="%F{green}Termux💖CPA%f %1~ %# "' >> ~/.zshrc
+# Tambahkan ASCII banner CPA ke ~/.zshrc
+echo '
+# CPA Banner
+echo -e "
+\033[1;31m█▀▀█\033[0m      \033[1;90m█▀▀▀▀█\033[0m \033[1;37m█▀▀▀▀█\033[0m \033[1;32m█▀▀▀▀█\033[0m
+\033[1;31m█──█\033[0m      \033[1;90m█────█\033[0m \033[1;37m█────█\033[0m \033[1;32m█────█\033[0m
+\033[1;31m█▄▄█\033[0m      \033[1;90m█▄▄▄▄█\033[0m \033[1;37m█▄▄▄▄█\033[0m \033[1;32m█▄▄▄▄█\033[0m
+
+       \033[1;33m×× CYBER PEOPLE ATTACK ××\033[0m
+"
+' >> ~/.zshrc
 
 chsh -s zsh
 
