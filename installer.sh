@@ -42,13 +42,29 @@ npm install -g net http2 tls cluster url crypto user-agents fs header-generator 
 
 # Clone required repositories
 echo "[+] Cloning project repositories..."
-mkdir -p ~/CPA-tools
-cd ~/CPA-tools
 git clone https://github.com/whitehat57/LOIC.git
-git clone https://oauth2:<your_token>@gitlab.com/whitehat57/cpa.git
-git clone https://oauth2:<your_token>@gitlab.com/whitehat57/karma-go.git
-git clone https://oauth2:<your_token>@gitlab.com/whitehat57/techstack.git
-
+cd LOIC
+chmod +x LOIC
+cd
+git clone https://gitlab.com/whitehat57/cpa.git
+cd cpa
+go mod download
+go get github.com/fatih/color@v1.15.0
+go build main.go
+cd
+git clone https://gitlab.com/whitehat57/karma-go.git
+cd karma-go
+go mod download
+go mod download golang.org/x/net github.com/fatih/color
+go get golang.org/x/net/idna@v0.21.0 github.com/fatih/color@v1.16.0
+go build -o karma *.go
+cd
+git clone https://gitlab.com/whitehat57/techstack.git
+cd techstack
+pkg install python clang openssl libffi
+pip install requests builtwith python-whois colorama
+pip install dnspython
+cd
 # Set hacker-style font for Termux
 echo "[+] Setting hacker-style font for Termux..."
 mkdir -p ~/.termux
@@ -71,7 +87,7 @@ git clone https://github.com/zsh-users/zsh-completions $ZSH_CUSTOM/plugins/zsh-c
 # Set Zsh as default shell and configure prompt
 echo "[+] Setting custom Zsh prompt..."
 sed -i 's/^plugins=(git)/plugins=(git zsh-autosuggestions zsh-syntax-highlighting zsh-completions)/' ~/.zshrc
-echo 'export PROMPT="%F{green}CPA@free_Palestine%f %1~ %# "' >> ~/.zshrc
+echo 'export PROMPT="%F{green}Termux💖CPA%f %1~ %# "' >> ~/.zshrc
 
 chsh -s zsh
 
