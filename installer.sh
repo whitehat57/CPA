@@ -4,12 +4,12 @@
 
 # Banner
 clear
-echo "  ___  ____   __  "
-echo " / __)(  _ \ / _\ "
-echo "( (__  ) __//    \"
-echo " \___)(__)  \_/\_/ v.2025"
-echo "    Installer"
-echo "=========================="
+echo '  ___  ____   __  '
+echo ' / __)(  _ \ / _\ '
+echo '( (__  ) __//    \'
+echo ' \___)(__)  \_/\_/ v.2025'
+echo '     Installer'
+echo '=========================='
 
 # Set variables
 export GOPATH=$HOME/go
