@@ -44,10 +44,10 @@ else
 fi
 
 log "Installing base packages..."
-# Fixed: Added missing packages and proper error handling
+# Fixed: Removed lolcat from pkg packages and added ruby
 PACKAGES=(
     git curl wget zsh figlet toilet ncurses-utils dialog
-    clang golang python nodejs exiftool nmap lolcat
+    clang golang python nodejs exiftool nmap ruby
     python-pip
 )
 
@@ -56,6 +56,19 @@ for package in "${PACKAGES[@]}"; do
         log "Warning: Failed to install $package, continuing..."
     fi
 done
+
+log "Installing Ruby gems..."
+# Install lolcat using gem
+if command_exists gem; then
+    # Update gem first
+    gem update --system --no-document 2>/dev/null || log "Warning: Could not update gem system"
+    
+    if ! gem install lolcat --no-document; then
+        log "Warning: Failed to install lolcat gem"
+    fi
+else
+    log "Warning: gem command not found, skipping lolcat installation"
+fi
 
 log "Setting up Python environment..."
 # Fixed: Better Python setup
@@ -150,16 +163,32 @@ fi
 log "Setting up Termux font..."
 # Fixed: Better font installation
 mkdir -p ~/.termux
-FONT_URL="https://github.com/ryanoasis/nerd-fonts/raw/master/patched-fonts/Hack/Regular/complete/Hack%20Regular%20Nerd%20Font%20Complete.ttf"
+FONT_URL="https://github.com/ryanoasis/nerd-fonts/raw/master/patched-fonts/Hack/Regular/HackNerdFont-Regular.ttf"
 if command_exists curl; then
     if curl -fsSL -o ~/.termux/font.ttf "$FONT_URL"; then
-        echo "font_size=14" > ~/.termux/termux.properties
-        # Fixed: Only reload settings if in Termux
-        if command_exists termux-reload-settings; then
-            termux-reload-settings
-        fi
+        log "Font downloaded successfully"
     else
-        log "Warning: Failed to download font"
+        log "Warning: Failed to download font, trying alternative URL"
+        ALT_FONT_URL="https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/Hack.zip"
+        if curl -fsSL -o ~/.termux/hack.zip "$ALT_FONT_URL"; then
+            if command_exists unzip; then
+                cd ~/.termux && unzip -j hack.zip "*.ttf" && mv *.ttf font.ttf && rm hack.zip
+                log "Font installed from alternative source"
+            else
+                log "Warning: unzip not available, cannot extract font"
+            fi
+        else
+            log "Warning: Failed to download font from alternative source"
+        fi
+    fi
+    
+    # Set font configuration
+    echo "font_size=14" > ~/.termux/termux.properties
+    echo "font_family=Hack" >> ~/.termux/termux.properties
+    
+    # Only reload settings if in Termux
+    if command_exists termux-reload-settings; then
+        termux-reload-settings
     fi
 else
     log "Warning: curl not available for font download"
@@ -378,13 +407,17 @@ if command -v figlet >/dev/null 2>&1 && command -v lolcat >/dev/null 2>&1; then
     
     while IFS= read -r line; do 
         printf "%*s\n" $(( (${#line} + width) / 2 )) "$line"
-    done <<< "$banner" | lolcat 2>/dev/null || echo "$banner"
+    done <<< "$banner" | lolcat 2>/dev/null || {
+        while IFS= read -r line; do 
+            printf "%*s\n" $(( (${#line} + width) / 2 )) "$line"
+        done <<< "$banner"
+    }
     
     echo
     subtitle="Cyber People Attack"
     separator="==========================="
-    printf "%*s\n" $(( (${#subtitle} + width) / 2 )) "$subtitle" | lolcat 2>/dev/null || echo "$subtitle"
-    printf "%*s\n" $(( (${#separator} + width) / 2 )) "$separator" | lolcat 2>/dev/null || echo "$separator"
+    printf "%*s\n" $(( (${#subtitle} + width) / 2 )) "$subtitle" | lolcat 2>/dev/null || printf "%*s\n" $(( (${#subtitle} + width) / 2 )) "$subtitle"
+    printf "%*s\n" $(( (${#separator} + width) / 2 )) "$separator" | lolcat 2>/dev/null || printf "%*s\n" $(( (${#separator} + width) / 2 )) "$separator"
     echo
     
     echo -n "Initializing "
@@ -396,6 +429,22 @@ if command -v figlet >/dev/null 2>&1 && command -v lolcat >/dev/null 2>&1; then
         done
     done
     echo -e "\b Ready! 🚀"
+    echo
+elif command -v figlet >/dev/null 2>&1; then
+    clear
+    width=$(tput cols 2>/dev/null || echo 80)
+    text="C P A"
+    banner=$(figlet -f slant "$text" 2>/dev/null || figlet "$text" 2>/dev/null || echo "$text")
+    
+    while IFS= read -r line; do 
+        printf "%*s\n" $(( (${#line} + width) / 2 )) "$line"
+    done <<< "$banner"
+    
+    echo
+    subtitle="Cyber People Attack"
+    separator="==========================="
+    printf "%*s\n" $(( (${#subtitle} + width) / 2 )) "$subtitle"
+    printf "%*s\n" $(( (${#separator} + width) / 2 )) "$separator"
     echo
 fi
 EOBANNER
@@ -412,6 +461,8 @@ fi
 clear
 if command_exists figlet && command_exists lolcat; then
     figlet "CPA Ready" | lolcat
+elif command_exists figlet; then
+    figlet "CPA Ready"
 else
     echo "=========================================="
     echo "           CPA READY                     "
