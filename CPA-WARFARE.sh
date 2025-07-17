@@ -46,9 +46,9 @@ fi
 log "Installing base packages..."
 # Fixed: Removed lolcat from pkg packages and added ruby
 PACKAGES=(
-    git curl wget zsh figlet toilet ncurses-utils dialog
-    clang golang python nodejs exiftool nmap ruby
-    python-pip
+    "git" "curl" "wget" "zsh" "figlet" "toilet" "ncurses-utils" "dialog"
+    "clang" "golang" "python" "nodejs" "exiftool" "nmap" "ruby"
+    "python-pip"
 )
 
 for package in "${PACKAGES[@]}"; do
@@ -83,7 +83,7 @@ fi
 
 # Install pip if not available
 if ! command_exists pip && ! command_exists pip3; then
-    $PYTHON_CMD -m ensurepip --upgrade
+    "$PYTHON_CMD" -m ensurepip --upgrade
 fi
 
 # Use pip3 if available, otherwise pip
@@ -93,8 +93,8 @@ else
     PIP_CMD="pip"
 fi
 
-$PIP_CMD install --upgrade pip
-$PIP_CMD install pipx
+"$PIP_CMD" install --upgrade pip
+"$PIP_CMD" install pipx
 
 # Fixed: Proper pipx path setup
 if [ -f ~/.local/bin/pipx ]; then
@@ -120,7 +120,7 @@ ZSH_CUSTOM="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
 mkdir -p "$ZSH_CUSTOM/plugins"
 
 # Fixed: Better plugin installation with error handling
-PLUGINS=(
+declare -a PLUGINS=(
     "zsh-autosuggestions:https://github.com/zsh-users/zsh-autosuggestions"
     "zsh-syntax-highlighting:https://github.com/zsh-users/zsh-syntax-highlighting"
     "zsh-completions:https://github.com/zsh-users/zsh-completions"
@@ -244,7 +244,7 @@ if [ -d ~/karma-go ]; then
 fi
 
 # Setup Python tools
-PYTHON_TOOLS=(
+declare -a PYTHON_TOOLS=(
     "techstack:requests builtwith python-whois colorama dnspython"
     "photon:requirements.txt"
     "theHarvester:requirements/base.txt"
@@ -260,10 +260,10 @@ for tool_info in "${PYTHON_TOOLS[@]}"; do
         cd ~/"$tool_name" || continue
         if [ "$requirements" = "requirements.txt" ] || [ "$requirements" = "requirements/base.txt" ]; then
             if [ -f "$requirements" ]; then
-                $PIP_CMD install -r "$requirements" || log "Warning: Failed to install requirements for $tool_name"
+                "$PIP_CMD" install -r "$requirements" || log "Warning: Failed to install requirements for $tool_name"
             fi
         else
-            $PIP_CMD install $requirements || log "Warning: Failed to install packages for $tool_name"
+            "$PIP_CMD" install $requirements || log "Warning: Failed to install packages for $tool_name"
         fi
         
         # Make executable if needed
@@ -380,7 +380,7 @@ chmod +x ~/CPA-Dashboard.sh
 
 log "Setting up aliases..."
 # Fixed: Better alias setup
-ALIASES=(
+declare -a ALIASES=(
     'alias dashboard="bash ~/CPA-Dashboard.sh"'
     'alias loic="cd ~/LOIC && ./LOIC"'
     'alias cpa="cd ~/cpa && ./main"'
